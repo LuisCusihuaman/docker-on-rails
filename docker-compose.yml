@@ -1,0 +1,30 @@
+version: "2.4"
+
+services:
+    rubyserver:
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+            target: dev
+        command: bundle exec rails s -b 0.0.0.0
+        ports:
+            - "3000:3000"
+        env_file: .env
+        volumes:
+            - ./:/usr/src/app
+        depends_on:
+            db:
+                condition: service_healthy
+    db:
+        image: postgres:13-alpine
+        env_file: .env
+        healthcheck:
+            test: pg_isready -U $PGUSER -h 127.0.0.1 -d $POSTGRES_DB
+            timeout: 5s
+            retries: 5
+        volumes:
+            - "db:/var/lib/postgresql/data"
+volumes:
+    db:
+    node-modules:
+    gems:
