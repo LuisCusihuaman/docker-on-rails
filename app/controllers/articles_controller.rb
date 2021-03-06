@@ -1,7 +1,9 @@
 class ArticlesController < ApplicationController
   before_action :find_article
-  skip_before_action :find_article, only: [:new, :create]
-
+  skip_before_action :find_article, only: [:new, :create,:index]
+  def index
+   @articles = Article.all
+  end
   def show
   end
 
