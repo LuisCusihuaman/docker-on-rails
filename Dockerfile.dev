@@ -1,34 +1,18 @@
-# TODO: Separar en dos dockerfile, dev sin multistage, prod si. 
 #TODO: not-super-root-user
-FROM ruby:3.0.0-alpine as builder
+FROM ruby:3.0.0-alpine as dev
 ARG RAILS_ROOT=/usr/src/app
-ENV NODE_ENV=production RAILS_ENV=production
+ENV RAILS_ENV=development RAILS_LOG_TO_STDOUT=true
 ARG PACKAGES="bash build-base nodejs sqlite-dev tzdata postgresql-dev yarn"
 WORKDIR ${RAILS_ROOT}
 RUN apk add --update --no-cache $PACKAGES && \
     gem install bundler:2.2.9
 
 COPY yarn.lock Gemfile* package.json  ./
-RUN NODE_ENV=production yarn install
+RUN yarn install
 
-RUN bundle config --local deployment true && \
-    bundle config --local without "development test assets" && \
-    bundle config --local path /var/www/app/shared/bundle && \
-    bundle install --quiet --jobs 4
+RUN bundle install --quiet --jobs 4
 
 COPY . ./
-
-#RUN bin/rails webpacker:compile
-#RUN bin/rails assets:precompile
-#RUN rm -rf node_modules tmp/cache app/assets vendor/assets spec
-# ************ DEV STAGE **************
-FROM builder as dev
-ARG RAILS_ROOT=/usr/src/app
-ENV RAILS_ENV=development RAILS_LOG_TO_STDOUT=true
-WORKDIR ${RAILS_ROOT}
-RUN bundle config --delete without && \
-    bundle config --delete with &&  \
-    bundle install --quiet --jobs 4
 
 CMD [ "sh", "-c", "bundle exec rake db:create db:migrate && bundle exec rails server -b 0.0.0.0" ]
 # ************ PROD STAGE **************

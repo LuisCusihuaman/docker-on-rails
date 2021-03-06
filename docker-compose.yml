@@ -5,8 +5,9 @@ services:
         build:
             context: .
             dockerfile: Dockerfile.dev
-            target: dev
-        command: bundle exec rails s -b 0.0.0.0
+        command: >
+            sh -c "bundle exec rake db:create db:migrate &&
+            bundle exec rails server -b 0.0.0.0"
         ports:
             - "3000:3000"
         env_file: .env
