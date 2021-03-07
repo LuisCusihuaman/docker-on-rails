@@ -1,11 +1,13 @@
 Rails.application.routes.draw do
-  devise_for :users
   root to: "home#index"
+  devise_for :users
 
+  resources :categories
+  resources :users, only: [:update]
   resources :articles do
     get "user/:user_id", to: "articles#from_author", on: :collection
   end
-  resources :categories
+  get 'profile', to: "users#edit"
 
   # get "articles", to: "articles#index"
   # get "articles/new", to: "articles#new", as: :new_articles
