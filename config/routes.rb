@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   resources :articles do
     get "user/:user_id", to: "articles#from_author", on: :collection
   end
+  resources :categories
 
   # get "articles", to: "articles#index"
   # get "articles/new", to: "articles#new", as: :new_articles
