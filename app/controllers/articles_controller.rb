@@ -24,6 +24,7 @@ class ArticlesController < ApplicationController
 
   def create
     @article = current_user.articles.create(article_params)
+    
     @article.save_categories 
     redirect_to @article
   end
